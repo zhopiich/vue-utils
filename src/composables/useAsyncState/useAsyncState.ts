@@ -1,6 +1,5 @@
 export interface AsyncStateOptions<T> {
   immediate?: boolean
-  initialState: T
   onError?: (e: unknown) => void
   onSuccess?: (data: T) => void
   shallow?: boolean
@@ -8,17 +7,17 @@ export interface AsyncStateOptions<T> {
 
 export function useAsyncState<T>(
   promiseFn: (...args: unknown[]) => Promise<T>,
+  initialState: MaybeRef<T>,
   options: AsyncStateOptions<T>,
 ) {
   const {
     immediate = true,
-    initialState,
     shallow = true,
     onError,
     onSuccess,
   } = options
 
-  const data = shallow ? shallowRef<T>(initialState) : ref<T>(initialState)
+  const state = shallow ? shallowRef(initialState) : ref(initialState)
   const isLoading = ref(false)
   const error = shallowRef<unknown | null>(null)
 
@@ -29,7 +28,7 @@ export function useAsyncState<T>(
 
     try {
       const result = await promiseFn(...args)
-      data.value = result
+      state.value = result
       onSuccess?.(result)
     }
     catch (e) {
@@ -44,5 +43,5 @@ export function useAsyncState<T>(
   if (immediate)
     execute()
 
-  return { data, isLoading, error, execute }
+  return { state, isLoading, error, execute }
 }
