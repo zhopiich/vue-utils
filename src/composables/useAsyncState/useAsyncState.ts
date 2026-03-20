@@ -21,6 +21,7 @@ export function useAsyncState<T>(
 
   const state = shallow ? shallowRef(initialState) : ref(initialState)
   const isLoading = ref(false)
+  const isFinished = ref(false)
   const error = shallowRef<unknown | null>(null)
 
   // TODO: abort controller
@@ -30,6 +31,7 @@ export function useAsyncState<T>(
     }
 
     isLoading.value = true
+    isFinished.value = false
     error.value = null
 
     try {
@@ -44,11 +46,12 @@ export function useAsyncState<T>(
     }
     finally {
       isLoading.value = false
+      isFinished.value = true
     }
   }
 
   if (immediate)
     execute()
 
-  return { state, isLoading, error, execute }
+  return { state, isLoading, isFinished, error, execute }
 }
