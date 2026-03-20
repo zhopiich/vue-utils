@@ -1,8 +1,9 @@
 export interface AsyncStateOptions<T> {
   immediate?: boolean
+  shallow?: boolean
+  resetOnExecute?: boolean
   onError?: (e: unknown) => void
   onSuccess?: (data: T) => void
-  shallow?: boolean
 }
 
 export function useAsyncState<T>(
@@ -13,6 +14,7 @@ export function useAsyncState<T>(
   const {
     immediate = true,
     shallow = true,
+    resetOnExecute = true,
     onError = () => {},
     onSuccess = () => {},
   } = options ?? {}
@@ -23,6 +25,10 @@ export function useAsyncState<T>(
 
   // TODO: abort controller
   async function execute(...args: unknown[]) {
+    if (resetOnExecute) {
+      state.value = toValue(initialState)
+    }
+
     isLoading.value = true
     error.value = null
 
