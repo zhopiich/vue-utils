@@ -2,6 +2,7 @@ export interface AsyncStateOptions<T> {
   immediate?: boolean
   shallow?: boolean
   resetOnExecute?: boolean
+  ignoreOnDispose?: boolean
   onError?: (e: unknown) => void
   onSuccess?: (data: T) => void
 }
@@ -15,6 +16,7 @@ export function useAsyncState<T>(
     immediate = true,
     shallow = true,
     resetOnExecute = true,
+    ignoreOnDispose = true,
     onError = () => {},
     onSuccess = () => {},
   } = options ?? {}
@@ -24,8 +26,11 @@ export function useAsyncState<T>(
   const isFinished = ref(false)
   const error = shallowRef<unknown | null>(null)
 
-  // TODO: abort controller
+  let executionsCount = 0
+
   async function execute(...args: unknown[]) {
+    const currentExecutionId = ++executionsCount
+
     if (resetOnExecute) {
       state.value = toValue(initialState)
     }
@@ -36,19 +41,27 @@ export function useAsyncState<T>(
 
     try {
       const result = await promiseFn(...args)
-      state.value = result
+      if (currentExecutionId === executionsCount)
+        state.value = result
       onSuccess(result)
       return result
     }
     catch (e) {
-      error.value = e
+      if (currentExecutionId === executionsCount)
+        error.value = e
       onError(e)
     }
     finally {
-      isLoading.value = false
+      if (currentExecutionId === executionsCount)
+        isLoading.value = false
       isFinished.value = true
     }
   }
+
+  onScopeDispose(() => {
+    if (ignoreOnDispose)
+      executionsCount = 0 // make all currentExecutionIds mismatched
+  })
 
   if (immediate)
     execute()
