@@ -11,7 +11,7 @@ export interface UseAsyncStateOptions<T, Shallow extends boolean> {
 
 type State<T, Shallow extends boolean> = Shallow extends true ? ShallowRef<T> : Ref<UnwrapRef<T>>
 
-export interface UseAsyncStateReturn<T, Params extends unknown[], Shallow extends boolean> {
+export interface UseAsyncStateReturn<T, Params extends unknown[] = unknown[], Shallow extends boolean = true> {
   state: State<T, Shallow>
   isLoading: Ref<boolean>
   isFinished: Ref<boolean>
@@ -19,7 +19,7 @@ export interface UseAsyncStateReturn<T, Params extends unknown[], Shallow extend
   execute: (...args: Params) => Promise<T | undefined>
 }
 
-export function useAsyncState<T, Params extends unknown[], Shallow extends boolean = true>(
+export function useAsyncState<T, Params extends unknown[] = unknown[], Shallow extends boolean = true>(
   promiseFn: (...args: Params) => Promise<T>,
   initialState: MaybeRef<T>,
   options?: UseAsyncStateOptions<T, Shallow>,
