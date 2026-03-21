@@ -1,17 +1,29 @@
-export interface AsyncStateOptions<T> {
+import type { MaybeRef, Ref, ShallowRef, UnwrapRef } from 'vue'
+
+export interface UseAsyncStateOptions<T, Shallow extends boolean> {
   immediate?: boolean
-  shallow?: boolean
+  shallow?: Shallow
   resetOnExecute?: boolean
   ignoreOnDispose?: boolean
   onError?: (e: unknown) => void
   onSuccess?: (data: T) => void
 }
 
-export function useAsyncState<T>(
-  promiseFn: (...args: unknown[]) => Promise<T>,
+type State<T, Shallow extends boolean> = Shallow extends true ? ShallowRef<T> : Ref<UnwrapRef<T>>
+
+export interface UseAsyncStateReturn<T, Params extends unknown[], Shallow extends boolean> {
+  state: State<T, Shallow>
+  isLoading: Ref<boolean>
+  isFinished: Ref<boolean>
+  error: Ref<unknown>
+  execute: (...args: Params) => Promise<T | undefined>
+}
+
+export function useAsyncState<T, Params extends unknown[], Shallow extends boolean = true>(
+  promiseFn: (...args: Params) => Promise<T>,
   initialState: MaybeRef<T>,
-  options?: AsyncStateOptions<T>,
-) {
+  options?: UseAsyncStateOptions<T, Shallow>,
+): UseAsyncStateReturn<T, Params, Shallow> {
   const {
     immediate = true,
     shallow = true,
@@ -40,7 +52,7 @@ export function useAsyncState<T>(
     error.value = null
 
     try {
-      const result = await promiseFn(...args)
+      const result = await promiseFn(...args as Params)
       if (currentExecutionId === executionsCount)
         state.value = result
       onSuccess(result)
@@ -66,5 +78,11 @@ export function useAsyncState<T>(
   if (immediate)
     execute()
 
-  return { state, isLoading, isFinished, error, execute }
+  return {
+    state: state as State<T, Shallow>,
+    isLoading,
+    isFinished,
+    error,
+    execute,
+  }
 }
