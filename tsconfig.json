@@ -13,7 +13,8 @@
     "paths": {
       "~/*": [
         "src/*"
-      ]
+      ],
+      "@test/*": ["test/*"]
     },
     "resolveJsonModule": true,
     "types": [

@@ -5,6 +5,7 @@ import Vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 import VueMacros from 'vue-macros/vite'
 import { VueRouterAutoImports } from 'vue-router/unplugin'
@@ -17,6 +18,8 @@ export default defineConfig({
     },
   },
   plugins: [
+    tsconfigPaths(),
+
     // https://github.com/vuejs/router/pull/2603
     VueRouter({
       dts: 'src/typed-router.d.ts',
