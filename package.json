@@ -35,9 +35,9 @@
     "unocss": "catalog:build",
     "unplugin-auto-import": "catalog:build",
     "unplugin-vue-components": "catalog:build",
-    "unplugin-vue-macros": "catalog:build",
     "vite": "catalog:build",
     "vitest": "catalog:dev",
+    "vue-macros": "catalog:build",
     "vue-tsc": "catalog:dev"
   },
   "resolutions": {
