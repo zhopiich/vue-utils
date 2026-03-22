@@ -24,6 +24,9 @@ catalogs:
     unplugin-vue-components:
       specifier: ^31.0.0
       version: 31.0.0
+    vue-macros:
+      specifier: ^3.1.2
+      version: 3.1.2
   dev:
     '@antfu/eslint-config':
       specifier: ^7.6.1
@@ -151,7 +154,7 @@ importers:
         specifier: catalog:dev
         version: 4.0.18(@types/node@25.3.3)(jiti@2.6.1)(jsdom@28.1.0)(tsx@4.19.2)(yaml@2.8.2)
       vue-macros:
-        specifier: ^3.1.2
+        specifier: catalog:build
         version: 3.1.2(@vueuse/core@14.2.1(vue@3.5.29(typescript@5.9.3)))(esbuild@0.27.3)(rollup@4.59.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(tsx@4.19.2)(yaml@2.8.2))(vue-tsc@3.2.5(typescript@5.9.3))(vue@3.5.29(typescript@5.9.3))
       vue-tsc:
         specifier: catalog:dev
