@@ -6,14 +6,15 @@
       "DOM",
       "ESNext"
     ],
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
+    // "ignoreDeprecations": "6.0",
+    // "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
       "~/*": [
-        "src/*"
-      ]
+        "./src/*"
+      ],
+      "@test/*": ["./test/*"]
     },
     "resolveJsonModule": true,
     "types": [
@@ -35,7 +36,8 @@
     "src/**/*.vue",
     "auto-imports.d.ts",
     "components.d.ts",
-    "shims.d.ts"
+    "shims.d.ts",
+    "test/**/*.ts"
   ],
   "exclude": [
     "dist",
