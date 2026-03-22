@@ -6,15 +6,15 @@
       "DOM",
       "ESNext"
     ],
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
+    // "ignoreDeprecations": "6.0",
+    // "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
       "~/*": [
-        "src/*"
+        "./src/*"
       ],
-      "@test/*": ["test/*"]
+      "@test/*": ["./test/*"]
     },
     "resolveJsonModule": true,
     "types": [
