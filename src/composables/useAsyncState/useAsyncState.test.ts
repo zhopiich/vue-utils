@@ -1,5 +1,5 @@
 import { createScope } from '@test/utils/scopeHelper'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, onTestFinished, vi } from 'vitest'
 import { promiseTimeout } from '~/utils/promise'
 import { useAsyncState } from './useAsyncState'
 
@@ -162,6 +162,28 @@ describe('useAsyncState', () => {
       execute('last', 0),
     ])
     expect(state.value).toBe('last')
+  })
+
+  it('default onError uses globalThis.reportError', async () => {
+    const { withScope, stopScopes } = createScope()
+
+    const mockReportError = vi.fn()
+    vi.stubGlobal('reportError', mockReportError)
+
+    onTestFinished(() => {
+      stopScopes()
+      vi.unstubAllGlobals()
+    })
+
+    const error = new Error('error message')
+    const func = vi.fn(async () => {
+      throw error
+    })
+
+    const { execute } = withScope(() => useAsyncState(func, '', { immediate: false }))
+    await execute()
+    expect(func).toBeCalledTimes(1)
+    expect(mockReportError).toHaveBeenCalledWith(error)
   })
 
   it('should not update state after scope is disposed', async () => {
