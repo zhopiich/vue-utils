@@ -80,6 +80,7 @@ export function useAsyncState<
   }
 
   onScopeDispose(() => {
+    isLoading.value = false
     if (ignoreOnDispose)
       executionsCount = 0 // make all currentExecutionIds mismatched
   })
