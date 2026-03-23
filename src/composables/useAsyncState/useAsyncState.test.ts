@@ -39,6 +39,7 @@ describe('useAsyncState', () => {
       'initial',
       { immediate: false, onError },
     ))
+    expect(error.value == null).toBe(true)
     await execute()
     expect(error.value).toBe(testError)
     expect(onError).toHaveBeenCalledTimes(1)
