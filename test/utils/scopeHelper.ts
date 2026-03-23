@@ -5,10 +5,12 @@ import { effectScope } from 'vue'
 export function createScope() {
   const scopes: EffectScope[] = []
 
-  afterEach(() => {
+  const stopScopes = () => {
     scopes.forEach(s => s.stop())
     scopes.length = 0
-  })
+  }
+
+  afterEach(() => stopScopes)
 
   function withScope<T>(fn: () => T): T {
     const scope = effectScope()
@@ -16,5 +18,5 @@ export function createScope() {
     return scope.run(fn) as T
   }
 
-  return { withScope }
+  return { withScope, stopScopes, scopes }
 }
