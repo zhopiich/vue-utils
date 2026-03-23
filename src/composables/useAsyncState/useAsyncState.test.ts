@@ -8,6 +8,15 @@ describe('useAsyncState', () => {
     expect(useAsyncState).toBeDefined()
   })
 
+  it('should resolve and update state with returned value', async () => {
+    const { withScope } = createScope()
+    const { execute, state } = withScope(() =>
+      useAsyncState((n: number) => Promise.resolve(n), 0))
+    expect(state.value).toBe(0)
+    await execute(1)
+    expect(state.value).toBe(1)
+  })
+
   it('should trigger onSuccess upon a successful request', async () => {
     const { withScope } = createScope()
     const onSuccess = vi.fn()
