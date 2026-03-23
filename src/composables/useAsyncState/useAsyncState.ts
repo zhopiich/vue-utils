@@ -1,4 +1,5 @@
 import type { MaybeRef, Ref, ShallowRef, UnwrapRef } from 'vue'
+import { tryOnScopeDispose } from '~/shared/tryOnScopeDispose'
 
 export interface UseAsyncStateOptions<T, Shallow extends boolean> {
   immediate?: boolean
@@ -79,7 +80,7 @@ export function useAsyncState<
     }
   }
 
-  onScopeDispose(() => {
+  tryOnScopeDispose(() => {
     isLoading.value = false
     if (ignoreOnDispose)
       executionsCount = 0 // make all currentExecutionIds mismatched
