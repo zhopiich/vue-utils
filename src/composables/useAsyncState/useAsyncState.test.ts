@@ -153,4 +153,25 @@ describe('useAsyncState', () => {
     ])
     expect(state.value).toBe('last')
   })
+
+  it('should not update state after scope is disposed', async () => {
+    const { withScope, stopScopes } = createScope()
+    const deferred = createDeferredPromise<string>()
+
+    const { execute, state, isLoading } = withScope(() =>
+      useAsyncState(() => deferred.promise, 'initial', { immediate: false },
+      ))
+
+    // start the request
+    const p = execute()
+    expect(isLoading.value).toBe(true)
+
+    stopScopes()
+    // resolve the promise after disposal
+    deferred.resolve('result')
+    await p
+
+    expect(state.value).toBe('initial')
+    expect(isLoading.value).toBe(false)
+  })
 })
