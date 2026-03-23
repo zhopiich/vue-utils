@@ -20,6 +20,22 @@ describe('useAsyncState', () => {
     expect(onSuccess).toHaveBeenCalledWith('result')
   })
 
+  it('should trigger onError when request fails', async () => {
+    const { withScope } = createScope()
+    const testError = new Error('Network Error')
+    const onError = vi.fn()
+
+    const { error, execute } = withScope(() => useAsyncState(
+      () => Promise.reject(testError),
+      'initial',
+      { immediate: false, onError },
+    ))
+    await execute()
+    expect(error.value).toBe(testError)
+    expect(onError).toHaveBeenCalledTimes(1)
+    expect(onError).toHaveBeenCalledWith(testError)
+  })
+
   function createDeferredPromise<T>() {
     let resolve!: (value: T) => void
     let reject!: (reason?: unknown) => void
