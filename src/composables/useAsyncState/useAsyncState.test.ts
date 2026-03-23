@@ -1,6 +1,6 @@
 import { createScope } from '@test/utils/scopeHelper'
 import { describe, expect, it, onTestFinished, vi } from 'vitest'
-import { promiseTimeout } from '~/utils/promise'
+import { promiseTimeout } from '~/shared/utils/promise'
 import { useAsyncState } from './useAsyncState'
 
 describe('useAsyncState', () => {
