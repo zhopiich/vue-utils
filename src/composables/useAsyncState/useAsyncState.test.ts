@@ -55,7 +55,7 @@ describe('useAsyncState', () => {
     return { promise, resolve, reject }
   }
 
-  it('should only load after execute when immediate is false', async () => {
+  it('should only load after execute when immediate is false', () => {
     const { withScope } = createScope()
     const { promise } = createDeferredPromise<number>()
     const { isLoading, execute } = withScope(() =>
