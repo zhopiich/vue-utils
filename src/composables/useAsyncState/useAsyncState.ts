@@ -38,7 +38,7 @@ export function useAsyncState<
     shallow = true,
     resetOnExecute = true,
     ignoreOnDispose = true,
-    onError = () => {},
+    onError = globalThis.reportError ?? (() => {}),
     onSuccess = () => {},
   } = options ?? {}
 
