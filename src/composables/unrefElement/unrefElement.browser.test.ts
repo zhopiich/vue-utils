@@ -12,8 +12,11 @@ describe('unrefElement', () => {
 
   it('should return the DOM element as is whether wrapped in ref or not', () => {
     const el = document.createElement('div')
+    const elRef = ref(el)
     expect(unrefElement(el)).toBe(el)
-    expect(unrefElement(ref(el))).toBe(el)
+    expect(unrefElement(el)).toBeInstanceOf(HTMLElement)
+    expect(unrefElement(elRef)).toBe(el)
+    expect(unrefElement(elRef)).toBeInstanceOf(HTMLElement)
   })
 
   it('should return $el from a component instance', () => {
