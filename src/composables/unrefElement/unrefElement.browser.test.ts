@@ -98,4 +98,132 @@ describe('unrefElement with mount', () => {
     expect(el).toBeInstanceOf(HTMLElement)
     expect(el?.id).toBe('btn')
   })
+
+  it('should return the underlying element from a template ref', async () => {
+    let unrefElementReturn: HTMLElement | null | undefined
+
+    const Component = defineComponent({
+      template: `
+      <div>
+        <div>Node 1</div>
+        <div ref="target-node">Node 2</div>
+        <div>Node 3</div>
+      </div>
+    `,
+      setup() {
+        const targetNodeRef = useTemplateRef<HTMLElement>('target-node')
+        onMounted(() => {
+          unrefElementReturn = unrefElement(targetNodeRef)
+        })
+      },
+    })
+
+    wrapper = mount(Component)
+
+    await wrapper.vm.$nextTick()
+
+    expect(unrefElementReturn).toBeInstanceOf(HTMLDivElement)
+    expect(unrefElementReturn?.textContent).toBe('Node 2')
+  })
+
+  it('should return the root element from a child component instance via template ref', async () => {
+    let unrefElementReturn: HTMLElement | null | undefined
+
+    const ChildComponent = defineComponent({
+      template: `
+      <div id="child-root-node">
+        <div id="grand-child-node" />
+      </div>
+    `,
+    })
+
+    const Component = defineComponent({
+      template: `
+      <div>
+        <ChildComponent ref="target-node" />
+      </div>
+    `,
+      components: {
+        ChildComponent,
+      },
+      setup() {
+        const targetNodeRef = useTemplateRef<VueInstance>('target-node')
+        onMounted(() => {
+          unrefElementReturn = unrefElement(targetNodeRef)
+        })
+      },
+    })
+
+    wrapper = mount(Component)
+    await wrapper.vm.$nextTick()
+
+    expect(unrefElementReturn).toBeInstanceOf(HTMLDivElement)
+    expect(unrefElementReturn?.id).toBe('child-root-node')
+  })
+
+  it('should return a text node from a component instance that renders only text', async () => {
+    let unrefElementReturn: Node | null | undefined
+
+    const ChildComponent = defineComponent({
+      template: 'This is a text node',
+    })
+
+    const Component = defineComponent({
+      template: `
+      <div>
+        <ChildComponent ref="target-node" />
+      </div>
+    `,
+      components: {
+        ChildComponent,
+      },
+      setup() {
+        const targetNodeRef = useTemplateRef<VueInstance>('target-node')
+        onMounted(() => {
+          unrefElementReturn = unrefElement(targetNodeRef)
+        })
+      },
+    })
+
+    wrapper = mount(Component)
+    await wrapper.vm.$nextTick()
+
+    expect(unrefElementReturn?.nodeType).toBe(Node.TEXT_NODE)
+    expect(unrefElementReturn?.textContent).toBe('This is a text node')
+  })
+
+  it('should return an empty text node as placeholder when component has multiple root elements', async () => {
+    let unrefElementReturn: Node | null | undefined
+
+    const ChildComponent = defineComponent({
+      template: `
+      <div id="child-root-node">Child Root Node</div>
+      <div id="child-root-node-2">Child Root Node 2</div>
+    `,
+    })
+
+    const Component = defineComponent({
+      template: `
+      <div>
+        <ChildComponent ref="target-node" />
+      </div>
+    `,
+      components: {
+        ChildComponent,
+      },
+      setup() {
+        const targetNodeRef = useTemplateRef<VueInstance>('target-node')
+        onMounted(() => {
+          unrefElementReturn = unrefElement(targetNodeRef)
+        })
+      },
+    })
+
+    wrapper = mount(Component)
+    await wrapper.vm.$nextTick()
+
+    expect(unrefElementReturn).toBeInstanceOf(Text)
+    expect(unrefElementReturn?.nodeType).toBe(Node.TEXT_NODE)
+    expect(unrefElementReturn?.textContent).toBe('')
+  })
 })
