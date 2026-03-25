@@ -1,5 +1,5 @@
 import type { EffectScope } from 'vue'
-import { afterEach } from 'vitest'
+import { onTestFinished } from 'vitest'
 import { effectScope } from 'vue'
 
 export function createScope() {
@@ -10,7 +10,7 @@ export function createScope() {
     scopes.length = 0
   }
 
-  afterEach(() => stopScopes)
+  onTestFinished(stopScopes)
 
   function withScope<T>(fn: () => T): T {
     const scope = effectScope()
