@@ -7,10 +7,7 @@ export type MaybeElementRef<T extends MaybeElement = MaybeElement> = MaybeRef<T>
 export type MaybeComputedElementRef<T extends MaybeElement = MaybeElement> = MaybeRefOrGetter<T>
 
 export type UnRefElementReturn<T extends MaybeElement = MaybeElement>
-  = T extends HTMLElement ? HTMLElement
-    : T extends SVGElement ? SVGElement
-      : T extends VueInstance ? T['$el']
-        : null | undefined
+  = T extends VueInstance ? Exclude<MaybeElement, VueInstance> : T | undefined
 
 export function isVueInstance(el: unknown): el is VueInstance {
   return el != null && typeof el === 'object' && '$el' in el

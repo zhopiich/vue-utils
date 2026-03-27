@@ -41,7 +41,7 @@ describe('unrefElement with mount', () => {
   afterEach(() => unmountWrapper(wrapper))
 
   it('should return the root DOM element from a child component template ref', async () => {
-    let el: HTMLElement | null | undefined
+    let el: Element | null | undefined
 
     const Child = defineComponent({
       template: '<span class="child">Child</span>',
@@ -127,7 +127,7 @@ describe('unrefElement with mount', () => {
   })
 
   it('should return the root element from a child component instance via template ref', async () => {
-    let unrefElementReturn: HTMLElement | null | undefined
+    let unrefElementReturn: Element | null | undefined
 
     const ChildComponent = defineComponent({
       template: `
