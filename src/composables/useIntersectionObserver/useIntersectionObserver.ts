@@ -2,7 +2,7 @@ import type { Pausable } from '@vueuse/shared'
 import type { MaybeRefOrGetter } from 'vue'
 import type { MaybeComputedElementRef, MaybeElement } from '../unrefElement'
 import { noop, toArray } from '@vueuse/shared'
-import { computed, shallowRef, toValue, watchPostEffect } from 'vue'
+import { computed, shallowRef, toValue, watch } from 'vue'
 import { tryOnScopeDispose } from '~/shared/tryOnScopeDispose'
 import { notNullish } from '~/shared/utils/is'
 import { defaultWindow } from '../_configurable'
@@ -43,28 +43,37 @@ export function useIntersectionObserver(
     return toArray(_target).map(unrefElement).filter(notNullish)
   })
 
+  let cleanup = noop
+
   const stopWatch = isSupported
-    ? watchPostEffect((onCleanup) => {
-        if (!isActive.value)
-          return
-        if (targets.value.length === 0)
-          return
+    ? watch(
+        () => [targets.value, unrefElement(root), toValue(rootMargin), isActive.value] as const,
+        ([targets, root, rootMargin, isActive], _, onCleanup) => {
+          if (!isActive)
+            return
+          if (targets.length === 0)
+            return
 
-        const observer = new IntersectionObserver(
-          callback,
-          {
-            root: unrefElement(root),
-            rootMargin: toValue(rootMargin),
-            threshold,
-          },
-        )
+          const observer = new IntersectionObserver(
+            callback,
+            {
+              root: unrefElement(root),
+              rootMargin: toValue(rootMargin),
+              threshold,
+            },
+          )
 
-        targets.value.forEach(el => observer.observe(el))
+          targets.forEach(el => observer.observe(el))
 
-        onCleanup (() => {
-          observer.disconnect()
-        })
-      })
+          cleanup = () => {
+            observer.disconnect()
+            cleanup = noop
+          }
+
+          onCleanup(cleanup)
+        },
+        { immediate, flush: 'post' },
+      )
     : noop
 
   const stop = () => {
@@ -77,6 +86,7 @@ export function useIntersectionObserver(
   return {
     isActive,
     pause() {
+      cleanup() // trigger cleanup synchronously
       isActive.value = false
     },
     resume() {
