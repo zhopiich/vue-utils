@@ -14,22 +14,22 @@ describe('debounce', () => {
     const fn = vi.fn()
     const debouncedFn = debounce(fn, 300)
 
-    debouncedFn()
+    debouncedFn('foo')
     expect(fn).not.toHaveBeenCalled()
     vi.advanceTimersByTime(300)
-    expect(fn).toHaveBeenCalled()
+    expect(fn).toHaveBeenCalledWith('foo')
   })
 
   it('should restart the timer if triggered again before timeout', () => {
     const fn = vi.fn()
     const debouncedFn = debounce(fn, 1000)
 
-    debouncedFn()
+    debouncedFn('foo')
     vi.advanceTimersByTime(300)
-    debouncedFn()
+    debouncedFn('bar')
     vi.advanceTimersByTime(700)
     expect(fn).not.toHaveBeenCalled()
     vi.advanceTimersByTime(300)
-    expect(fn).toHaveBeenCalled()
+    expect(fn).toHaveBeenCalledWith('bar')
   })
 })
